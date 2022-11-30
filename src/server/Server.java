@@ -1,8 +1,15 @@
+package server;
+
+import util.ConsoleHelper;
+import util.Message;
+import util.MessageType;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 public class Server {
     private static Map<String, Connection> connectionMap;
@@ -41,7 +48,7 @@ public class Server {
                 serverMainLoop(connection, userName);
                 connectionMap.remove(userName);
                 sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
-                ConsoleHelper.writeMessage("Connection closed");
+                ConsoleHelper.writeMessage("server.Connection closed");
 
             } catch (IOException | ClassNotFoundException e) {
                 ConsoleHelper.writeMessage("Error occurred");
