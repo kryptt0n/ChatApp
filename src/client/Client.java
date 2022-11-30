@@ -6,6 +6,7 @@ import util.Message;
 import util.MessageType;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Client {
     protected Connection connection;
@@ -15,26 +16,16 @@ public class Client {
     public class SocketThread extends Thread {
         @Override
         public void run() {
-
-        }
-
-        protected void processIncomingMessage(String message) {
-            ConsoleHelper.writeMessage(message);
-        }
-
-        protected void informAboutAddingNewUser(String userName) {
-            ConsoleHelper.writeMessage("New user " + userName + " arrived!");
-        }
-
-        protected void informAboutDeletingNewUser(String userName) {
-            ConsoleHelper.writeMessage("User " + userName + " disconnected!");
-        }
-
-        protected void notifyConnectionStatusChanged(boolean clientConnected) {
-            Client.this.clientConnected = clientConnected;
-            synchronized (Client.this) {
-                Client.this.notify();
+            String serverAddress = getServerAddress();
+            int serverPort = getServerPort();
+            try {
+                connection = new Connection(new Socket(serverAddress, serverPort));
+                clientHandshake();
+                clientMainLoop();
+            } catch (IOException | ClassNotFoundException e) {
+                notifyConnectionStatusChanged(false);
             }
+
         }
 
         protected void clientHandshake() throws IOException, ClassNotFoundException {
@@ -64,6 +55,25 @@ public class Client {
                     throw new IOException("Unexpected MessageType");
                 }
             }
+        }
+
+        protected void notifyConnectionStatusChanged(boolean clientConnected) {
+            Client.this.clientConnected = clientConnected;
+            synchronized (Client.this) {
+                Client.this.notify();
+            }
+        }
+
+        protected void processIncomingMessage(String message) {
+            ConsoleHelper.writeMessage(message);
+        }
+
+        protected void informAboutAddingNewUser(String userName) {
+            ConsoleHelper.writeMessage("New user " + userName + " arrived!");
+        }
+
+        protected void informAboutDeletingNewUser(String userName) {
+            ConsoleHelper.writeMessage("User " + userName + " disconnected!");
         }
     }
 

@@ -19,6 +19,7 @@ public class Server {
     }
 
     public static void main(String[] args) throws IOException {
+        ConsoleHelper.writeMessage("Write port");
         int port = ConsoleHelper.readInt();
         try(ServerSocket serverSocket = new ServerSocket(port)) {
             ConsoleHelper.writeMessage("сервер запущен");
